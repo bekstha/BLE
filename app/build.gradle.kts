@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 plugins {
     id("com.android.application")
@@ -13,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId = "fi.metropolia.bibeks.ble"
-        minSdk = 26
-        targetSdk = 33
+        minSdk = 27
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -44,7 +43,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -74,16 +73,19 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation ("androidx.compose.runtime:runtime-livedata:1.7.0-alpha02")
 
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+
 
 
     //DI
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation ("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-android-compiler:2.48")
-    kapt ("androidx.hilt:hilt-compiler:1.0.0")
+    kapt ("androidx.hilt:hilt-compiler:1.1.0")
 
     //Navigation
-    implementation ("androidx.navigation:navigation-compose:2.5.2")
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
 
     //Permissions
     implementation ("com.google.accompanist:accompanist-permissions:0.21.1-beta")

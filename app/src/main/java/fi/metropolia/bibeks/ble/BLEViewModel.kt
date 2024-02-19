@@ -22,12 +22,15 @@ import java.util.*
 @SuppressLint("MissingPermission")
 class BLEViewModel: ViewModel() {
 
+    val heartRateRSSI = MutableLiveData<List<Int>>()
+
+
     companion object GattAttributes {
         const val SCAN_PERIOD: Long = 5000
     }
 
     var mBluetoothGatt: BluetoothGatt? = null
-    val mGattCallback = GattClientCallback()
+    val mGattCallback = GattClientCallback(this)
 
     val scanResults = MutableLiveData<List<ScanResult>>(null)
     val fScanning = MutableLiveData<Boolean>(false)
@@ -65,8 +68,12 @@ class BLEViewModel: ViewModel() {
             super.onScanResult(callbackType, result)
             val device = result.device
             val deviceAddress = device.address
+            val rssi = result.rssi // RSSI value
             mResults[deviceAddress] = result
+            scanResults.postValue(mResults.values.toList())
 
+            heartRateRSSI.postValue(heartRateRSSI.value?.plus(rssi) ?: listOf(rssi))
         }
     }
+
 }

@@ -8,7 +8,7 @@ import java.util.*
 
 @SuppressLint("MissingPermission")
 
-class GattClientCallback (): BluetoothGattCallback() {
+class GattClientCallback (private val viewModel: BLEViewModel): BluetoothGattCallback() {
     val mBPM = MutableLiveData<Int>(0)
 
     val HEART_RATE_SERVICE_UUID = convertFromInteger(0x180D)
@@ -82,6 +82,9 @@ class GattClientCallback (): BluetoothGattCallback() {
         val bpm = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 1)
         mBPM.postValue(bpm)
         Log.d( "BLE DBG" , "BPM livedata: ${mBPM.value} " )
+
+        val rssi = characteristic?.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT8, 0)
+        viewModel.heartRateRSSI.postValue((viewModel.heartRateRSSI.value?.plus(rssi) ?: listOf(rssi)) as List<Int>?)
 
     }
 }

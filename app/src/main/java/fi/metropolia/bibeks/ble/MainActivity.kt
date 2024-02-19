@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import fi.metropolia.bibeks.ble.ui.theme.BLETheme
 @RequiresApi(Build.VERSION_CODES.S)
 class MainActivity : ComponentActivity() {
@@ -47,11 +48,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var takeResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var bluetoothViewModel: BLEViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
         bluetoothViewModel = BLEViewModel()
+
         takePermissions =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
             { it ->
@@ -87,7 +90,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BLETheme {
-                // A surface container using the 'background' color from the theme
+                // A surface container using the 'background' color from the them
+
+
+                val rssiValues: List<Int> by bluetoothViewModel.heartRateRSSI.observeAsState(emptyList())
+
+
+                Log.d("BLERSSI", "Received RSSI: $rssiValues")
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -97,7 +107,9 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Top
                     ) {
                         StartScan()
-                        ShowDevices(bluetoothViewModel)
+                        //ShowDevices(bluetoothViewModel)
+                        RSSIGraph(rssiValues)
+
                     }
 
                 }
@@ -105,8 +117,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Composable
     fun StartScan() {
+
+        val fScanning: Boolean by bluetoothViewModel.fScanning.observeAsState(false)
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -124,8 +140,11 @@ class MainActivity : ComponentActivity() {
                         Manifest.permission.ACCESS_FINE_LOCATION
                     ))
             }) {
-                Text("Start scan")
+                Text("Connect to Heart Rate")
             }
+
+            Text(if (fScanning) "Scanning" else "Not scanning")
+            Text("Device connected: ${if (bluetoothViewModel.mBluetoothGatt !=null) bluetoothViewModel.mBluetoothGatt?.device?.name else "press scan button"}")
 
         }
     }
